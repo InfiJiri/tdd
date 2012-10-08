@@ -18,6 +18,7 @@ namespace DAL.Entities
         public TddEntities()
             : base("name=TddEntities")
         {
+            this.Configuration.LazyLoadingEnabled = false;
         }
     
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
@@ -25,6 +26,7 @@ namespace DAL.Entities
             throw new UnintentionalCodeFirstException();
         }
     
-        public DbSet<Account> Account { get; set; }
+        public DbSet<Account> Accounts { get; set; }
+        public DbSet<Transaction> Transactions { get; set; }
     }
 }

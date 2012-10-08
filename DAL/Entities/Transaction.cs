@@ -12,20 +12,16 @@ namespace DAL.Entities
     using System;
     using System.Collections.Generic;
     
-    public partial class Account
+    public partial class Transaction
     {
-        public Account()
-        {
-            this.TransactionsAsRecipient = new HashSet<Transaction>();
-            this.TransactionsAsSender = new HashSet<Transaction>();
-        }
-    
         public int Id { get; set; }
-        public string AccountNumber { get; set; }
+        public int SenderAccountId { get; set; }
+        public int RecipientAccountId { get; set; }
+        public long Amount { get; set; }
         public System.DateTime Created { get; set; }
-        public long Balance { get; set; }
+        public Nullable<System.DateTime> Committed { get; set; }
     
-        internal virtual ICollection<Transaction> TransactionsAsRecipient { get; set; }
-        internal virtual ICollection<Transaction> TransactionsAsSender { get; set; }
+        public virtual Account RecipientAccount { get; set; }
+        public virtual Account SenderAccount { get; set; }
     }
 }

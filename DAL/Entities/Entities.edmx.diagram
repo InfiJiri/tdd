@@ -6,6 +6,9 @@
     <edmx:Diagrams>
       <Diagram DiagramId="df63531f4d61440ea96ab181f42a93a4" Name="Diagram1">
         <EntityTypeShape EntityType="tddModel.Account" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="tddModel.Transaction" Width="1.5" PointX="3" PointY="0.75" IsExpanded="true" />
+        <AssociationConnector Association="tddModel.FK_Transaction_RecipientAccount" />
+        <AssociationConnector Association="tddModel.FK_Transaction_SenderAccount" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

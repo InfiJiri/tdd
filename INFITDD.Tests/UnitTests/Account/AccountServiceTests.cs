@@ -1,15 +1,14 @@
 ﻿using System;
-using System.Web.Mvc;
+using Application.Services;
 using DAL.Entities;
 using DAL.Repositories;
-using INFITDD.Controllers;
 using INFITDD.Tests.Helpers;
 using NUnit.Framework;
 
-namespace INFITDD.Tests.AcceptanceTests {
+namespace INFITDD.Tests.UnitTests {
 
     [TestFixture]
-    public class AccountTests {
+    public class AccountServiceTests {
 
         protected TddEntities EntitiesContext;
 
@@ -35,16 +34,17 @@ namespace INFITDD.Tests.AcceptanceTests {
         }
 
         [Test]
-        public void Index() {
-            var account = CreateAccount("1234");
+        public void TransferMoneyTest() {
+            var account1 = CreateAccount("1234");
+            var account2 = CreateAccount("5678");
 
-            var controller = new AccountController();
+            var accountService = new AccountService(AccountRepository);
 
-            var result = controller.Index(account.Id) as ViewResult;
+            var success = accountService.TransferMoney(account1, account2, 170000);
 
-            Assert.IsNotNull(result);
-
-            Assert.AreEqual("1234", result.ViewBag.Account.AccountNumber);
+            Assert.IsTrue(success);
+            Assert.IsTrue(account1.Balance == -170000);
+            Assert.IsTrue(account2.Balance == 170000);
         }
 
         private Account CreateAccount(string accountNumber) {

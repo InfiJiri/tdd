@@ -4,9 +4,18 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="tddModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="tddModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2008" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityContainer Name="tddModelStoreContainer">
           <EntitySet Name="Account" EntityType="tddModel.Store.Account" store:Type="Tables" Schema="dbo" />
+          <EntitySet Name="Transaction" EntityType="tddModel.Store.Transaction" store:Type="Tables" Schema="dbo" />
+          <AssociationSet Name="FK_Transaction_RecipientAccount" Association="tddModel.Store.FK_Transaction_RecipientAccount">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Transaction" EntitySet="Transaction" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transaction_SenderAccount" Association="tddModel.Store.FK_Transaction_SenderAccount">
+            <End Role="Account" EntitySet="Account" />
+            <End Role="Transaction" EntitySet="Transaction" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Account">
           <Key>
@@ -14,15 +23,59 @@
           </Key>
           <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
           <Property Name="AccountNumber" Type="varchar" Nullable="false" MaxLength="50" />
+          <Property Name="Balance" Type="bigint" Nullable="false" />
           <Property Name="Created" Type="datetime2" Nullable="false" />
         </EntityType>
-      </Schema>
-    </edmx:StorageModels>
+        <EntityType Name="Transaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" StoreGeneratedPattern="Identity" />
+          <Property Name="SenderAccountId" Type="int" Nullable="false" />
+          <Property Name="RecipientAccountId" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="bigint" Nullable="false" />
+          <Property Name="Created" Type="datetime2" Nullable="false" />
+          <Property Name="Committed" Type="datetime2" />
+        </EntityType>
+        <Association Name="FK_Transaction_RecipientAccount">
+          <End Role="Account" Type="tddModel.Store.Account" Multiplicity="1" />
+          <End Role="Transaction" Type="tddModel.Store.Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Transaction">
+              <PropertyRef Name="SenderAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transaction_SenderAccount">
+          <End Role="Account" Type="tddModel.Store.Account" Multiplicity="1" />
+          <End Role="Transaction" Type="tddModel.Store.Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Transaction">
+              <PropertyRef Name="SenderAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="tddModel" Alias="Self" p1:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:p1="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
-        <EntityContainer Name="tddEntities" p1:LazyLoadingEnabled="true">
-          <EntitySet Name="Account" EntityType="tddModel.Account" />
+        <EntityContainer Name="tddEntities" p1:LazyLoadingEnabled="false">
+          <EntitySet Name="Accountz" EntityType="tddModel.Account" />
+          <EntitySet Name="Transactions" EntityType="tddModel.Transaction" />
+          <AssociationSet Name="FK_Transaction_RecipientAccount" Association="tddModel.FK_Transaction_RecipientAccount">
+            <End Role="Account" EntitySet="Accountz" />
+            <End Role="Transaction" EntitySet="Transactions" />
+          </AssociationSet>
+          <AssociationSet Name="FK_Transaction_SenderAccount" Association="tddModel.FK_Transaction_SenderAccount">
+            <End Role="Account" EntitySet="Accountz" />
+            <End Role="Transaction" EntitySet="Transactions" />
+          </AssociationSet>
         </EntityContainer>
         <EntityType Name="Account">
           <Key>
@@ -31,19 +84,72 @@
           <Property Name="Id" Type="Int32" Nullable="false" p1:StoreGeneratedPattern="Identity" />
           <Property Name="AccountNumber" Type="String" Nullable="false" MaxLength="50" Unicode="false" FixedLength="false" />
           <Property Name="Created" Type="DateTime" Nullable="false" Precision="7" />
+          <Property Type="Int64" Name="Balance" Nullable="false" />
+          <NavigationProperty Name="TransactionsAsRecipient" Relationship="tddModel.FK_Transaction_RecipientAccount" FromRole="Account" ToRole="Transaction" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
+          <NavigationProperty Name="TransactionsAsSender" Relationship="tddModel.FK_Transaction_SenderAccount" FromRole="Account" ToRole="Transaction" a:GetterAccess="Internal" xmlns:a="http://schemas.microsoft.com/ado/2006/04/codegeneration" a:SetterAccess="Internal" />
         </EntityType>
+        <EntityType Name="Transaction">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Type="Int32" Name="Id" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Type="Int32" Name="SenderAccountId" Nullable="false" />
+          <Property Type="Int32" Name="RecipientAccountId" Nullable="false" />
+          <Property Type="Int64" Name="Amount" Nullable="false" />
+          <Property Type="DateTime" Name="Created" Nullable="false" Precision="7" />
+          <Property Type="DateTime" Name="Committed" Precision="7" />
+          <NavigationProperty Name="RecipientAccount" Relationship="tddModel.FK_Transaction_RecipientAccount" FromRole="Transaction" ToRole="Account" />
+          <NavigationProperty Name="SenderAccount" Relationship="tddModel.FK_Transaction_SenderAccount" FromRole="Transaction" ToRole="Account" />
+        </EntityType>
+        <Association Name="FK_Transaction_RecipientAccount">
+          <End Type="tddModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="tddModel.Transaction" Role="Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Transaction">
+              <PropertyRef Name="SenderAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_Transaction_SenderAccount">
+          <End Type="tddModel.Account" Role="Account" Multiplicity="1" />
+          <End Type="tddModel.Transaction" Role="Transaction" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Account">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Transaction">
+              <PropertyRef Name="SenderAccountId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
         <EntityContainerMapping StorageEntityContainer="tddModelStoreContainer" CdmEntityContainer="tddEntities">
-          <EntitySetMapping Name="Account">
+          <EntitySetMapping Name="Accountz">
             <EntityTypeMapping TypeName="tddModel.Account">
               <MappingFragment StoreEntitySet="Account">
+                <ScalarProperty Name="Balance" ColumnName="Balance" />
                 <ScalarProperty Name="Id" ColumnName="Id" />
                 <ScalarProperty Name="AccountNumber" ColumnName="AccountNumber" />
                 <ScalarProperty Name="Created" ColumnName="Created" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Transactions">
+            <EntityTypeMapping TypeName="tddModel.Transaction">
+              <MappingFragment StoreEntitySet="Transaction">
+                <ScalarProperty Name="Committed" ColumnName="Committed" />
+                <ScalarProperty Name="Created" ColumnName="Created" />
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="RecipientAccountId" ColumnName="RecipientAccountId" />
+                <ScalarProperty Name="SenderAccountId" ColumnName="SenderAccountId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
@@ -61,7 +167,7 @@
     <Options>
       <DesignerInfoPropertySet>
         <DesignerProperty Name="ValidateOnBuild" Value="true" />
-        <DesignerProperty Name="EnablePluralization" Value="False" />
+        <DesignerProperty Name="EnablePluralization" Value="True" />
         <DesignerProperty Name="IncludeForeignKeysInModel" Value="True" />
         <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
       </DesignerInfoPropertySet>

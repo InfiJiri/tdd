@@ -1,25 +1,24 @@
-﻿using System.Collections.Generic;
-using System.Linq;
+﻿using System;
+using Application.Services.Interfaces;
 using DAL.Entities;
-using DAL.Repositories;
-using DAL.UnitOfWorks;
+using DAL.Repositories.Interfaces;
 
 namespace Application.Services {
 
-    public class AccountService {
+    public class AccountService : IAccountService {
 
-        private readonly IUnitOfWorkFactory _unitOfWorkFactory;
+        private readonly IAccountRepository _accountRepository;
 
-        public AccountService(IUnitOfWorkFactory unitOfWorkFactory) {
-            _unitOfWorkFactory = unitOfWorkFactory;
+        public AccountService(IAccountRepository accountRepository) {
+            _accountRepository = accountRepository;
         }
 
         public Account GetById(int id) {
-            using (var uow = _unitOfWorkFactory.CreateUnitOfWork()) {
-                var cr = new AccountRepository(uow);
-                return cr.GetById(id);
-            }
+            return _accountRepository.GetById(id);
         }
 
+        public bool TransferMoney(Account sender, Account recipient, int amount) {
+            throw new NotImplementedException();
+        }
     }
 }

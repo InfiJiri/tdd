@@ -3,7 +3,7 @@
 namespace INFITDD.Tests.UnitTests {
 
     [TestFixture]
-    public class AccountTest {
+    public class AccountRepositoryTests {
 
         [Test]
         public void FlawlessLogicTest() {

@@ -1,23 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using DAL.Entities;
-using DAL.UnitOfWorks;
+using DAL.Repositories.Interfaces;
 
 namespace DAL.Repositories {
 
-    public class AccountRepository {
+    public class AccountRepository : IAccountRepository {
 
         readonly TddEntities _context;
 
-        public AccountRepository(EntitiesUnitOfWork ctx) {
-		    _context = ctx.Entities;
+        public AccountRepository(TddEntities context) {
+            _context = context;
 		}
 
         public Account GetById(int id) {
-            return _context.Account.SingleOrDefault(a => a.Id == id);
+            return _context.Accounts.SingleOrDefault(a => a.Id == id);
         } 
 
     }
