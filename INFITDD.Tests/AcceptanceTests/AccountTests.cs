@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
+using Application.Services;
+using DAL.Context;
 using DAL.Entities;
 using DAL.Repositories;
 using INFITDD.Controllers;
@@ -15,7 +17,7 @@ namespace INFITDD.Tests.AcceptanceTests {
 
         protected AccountRepository AccountRepository {
             get {
-                return new AccountRepository(EntitiesContext);
+                return new AccountRepository();
             }
         }
 
@@ -35,10 +37,10 @@ namespace INFITDD.Tests.AcceptanceTests {
         }
 
         [Test]
-        public void Index() {
+        public void IndexActionLoadsCorrectAccount() {
             var account = CreateAccount("1234");
 
-            var controller = new AccountController();
+            var controller = new AccountController(new AccountService(new AccountRepository(), new TddUnitOfWorkFactory()));
 
             var result = controller.Index(account.Id) as ViewResult;
 

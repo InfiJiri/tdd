@@ -1,5 +1,6 @@
 ﻿using System;
 using Application.Services;
+using DAL.Context;
 using DAL.Entities;
 using DAL.Repositories;
 using INFITDD.Tests.Helpers;
@@ -10,27 +11,13 @@ namespace INFITDD.Tests.UnitTests {
     [TestFixture]
     public class AccountServiceTests {
 
-        protected TddEntities EntitiesContext;
-
-        protected AccountRepository AccountRepository {
-            get {
-                return new AccountRepository(EntitiesContext);
-            }
-        }
-
-        protected TddEntities GetContext() {
-            return new TddEntities();
-        }
-
         [TestFixtureSetUp]
         public void Init() {
             DatabaseCleaner.Clean();
-            EntitiesContext = GetContext();
         }
 
         [TestFixtureTearDown]
         public void Clean() {
-            EntitiesContext.Dispose();
         }
 
         [Test]
@@ -38,7 +25,7 @@ namespace INFITDD.Tests.UnitTests {
             var account1 = CreateAccount("1234");
             var account2 = CreateAccount("5678");
 
-            var accountService = new AccountService(AccountRepository);
+            var accountService = new AccountService(new AccountRepository(), new TddUnitOfWorkFactory());
 
             var success = accountService.TransferMoney(account1, account2, 170000);
 
@@ -52,11 +39,6 @@ namespace INFITDD.Tests.UnitTests {
 
             account.AccountNumber = accountNumber;
             account.Created = DateTime.Now;
-
-            EntitiesContext.Accounts.Add(account);
-            EntitiesContext.SaveChanges();
-
-            Assert.IsTrue(account.Id != 0, "Account kon niet worden aangemaakt");
 
             return account;
         }
